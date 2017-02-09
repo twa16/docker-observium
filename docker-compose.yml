@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  mysqldb:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306"
+    networks:
+      - docker_observium
+  observium:
+    build: observium/
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - "./observium/observium-opt:/opt/observium"
+    ports:
+      - "80"
+    networks:
+      - docker_observium
+    depends_on:
+      - mysqldb
+
+networks:
+  docker_observium:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: "172.21.0.0/24"
+        gateway: "172.21.0.1"
